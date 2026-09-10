@@ -1,6 +1,26 @@
 #sol_side_menu [data-side-menu-route] {
   touch-action: manipulation;
 }
+[data-portal-lettering] {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  pointer-events: none;
+}
+#sol_side_menu[data-lettering-renderer="webgpu"] [data-portal-lettering] {
+  opacity: 1;
+}
+#sol_side_menu[data-lettering-renderer="webgpu"] [data-inscription-text] {
+  color: transparent;
+  text-shadow: none;
+}
+#sol_side_menu [data-inscription-text]::selection {
+  color: #ffe29a;
+  background: #59472f;
+}
 
 @font-face {
   font-family: "Solarisael Runic";
@@ -66,10 +86,6 @@
 [data-glyph-depth="far"] {
   z-index: 0;
 }
-#sol_side_menu sol-inscription {
-  position: relative;
-  display: inline-block;
-}
 .sol__enchantment_letters {
   position: absolute;
   inset: 0;
@@ -78,25 +94,6 @@
   pointer-events: none;
   user-select: none;
   --bleed-light: 0.45;
-}
-.sol__gather_glyph {
-  position: absolute;
-  display: grid;
-  place-items: center;
-  font-size: 0.8em;
-  line-height: 1;
-  opacity: 0;
-  pointer-events: none;
-}
-.sol__gather_glyph > * {
-  grid-area: 1 / 1;
-}
-.sol__gather_letter {
-  opacity: 0;
-  color: #ffe29a;
-  text-shadow:
-    0 0 0.3rem #ffdf8fcc,
-    0 0 0.9rem #ffbc4585;
 }
 .sol__letter_bleed {
   position: absolute;
@@ -107,12 +104,6 @@
     0 0 0.25rem #ffdc86c0,
     0 0 0.65rem #ffb63580;
   animation: enchanted-bleed 5s linear infinite paused;
-}
-.sol__side_menu_route .sol__enchantment_letters {
-  filter: brightness(2);
-}
-.sol__side_menu_route .sol__letter_bleed {
-  font-size: max(0.32em, 0.8rem);
 }
 .sol__enchantment_rim {
   inset: var(--close-rim-inset, 0px);
@@ -135,26 +126,6 @@
 #sol_side_menu[data-portal-enchantment="active"]
   :is(.sol__ambient_glyph, .sol__letter_bleed) {
   animation-play-state: running;
-}
-#sol_side_menu
-  [data-side-menu-route]:is(
-    :hover,
-    :focus-visible,
-    [data-portal-selected="true"],
-    [data-enchantment-assembling="true"]
-  )
-  .sol__enchantment_letters {
-  --bleed-light: 0.95;
-}
-#sol_side_menu [data-enchantment-assembling="true"] [data-inscription-text] {
-  text-shadow:
-    0 1px 2px #000,
-    1px 0 2px #000,
-    -1px 0 2px #000,
-    0 -1px 2px #000,
-    0 0 0.3rem #ffe6a2cc,
-    0 0 1rem #ffbf4b99,
-    0 0 1.6rem #eba02555;
 }
 @keyframes enchanted-depth {
   0%,

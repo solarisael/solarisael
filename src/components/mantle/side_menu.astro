@@ -6,7 +6,6 @@ import {
   WRITING_PHASE_NAV_ITEMS,
 } from "../../data/site_nav.js";
 import RitualSeparator from "../ornament/ritual_separator.astro";
-import Inscription from "../ornament/inscription.astro";
 import ObsidianTablet from "../ornament/obsidian_tablet.astro";
 import { with_base } from "../../utils/routes.js";
 
@@ -127,6 +126,8 @@ const user_measure_options = [
 
     <ObsidianTablet>
       <div slot="scene" data-portal-glyphs aria-hidden="true"></div>
+      <canvas slot="foreground" data-portal-lettering aria-hidden="true"
+      ></canvas>
       <div id="sol_side_menu_panel_scroll">
         <div id="sol_side_menu_panel_header">
           <button
@@ -196,7 +197,7 @@ const user_measure_options = [
                         href={with_base(nav_item.href)}
                         hx-get={with_base(nav_item.href)}
                       >
-                        <Inscription text={nav_item.label} manual />
+                        <span data-inscription-text>{nav_item.label}</span>
                       </a>
                     </li>
                   ))

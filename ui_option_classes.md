@@ -34,6 +34,16 @@ The shader supports 16 visible buttons within the tablet's scroll area.
 Each surface ends two CSS pixels inside its button bounds.
 The runtime updates geometry when the panel, scroll position, fonts, or layout changes.
 
+Menu labels remain ordinary HTML text.
+One foreground WebGPU canvas renders their animated letters, gathering glyphs, and particle trails.
+Ambient water glyphs and close-button motes keep their existing DOM renderer.
+
+Glyph atlases rebuild when text or fonts change.
+Layout changes update glyph positions from the existing text nodes.
+Animation frames update GPU time without creating or changing per-letter DOM elements.
+Closed menus, hidden tabs, and reduced motion stop foreground draws.
+Font or GPU failures keep the native text readable.
+
 ## Page Transition Breath
 
 - Purpose: controls fade-out -> gap -> fade-in timing between page swaps.

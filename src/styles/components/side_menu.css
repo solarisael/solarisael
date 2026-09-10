@@ -266,7 +266,9 @@
     color 180ms,
     text-shadow 180ms;
 }
-.sol__side_menu_route sol-inscription {
+.sol__side_menu_route [data-inscription-text] {
+  display: inline-block;
+  white-space: pre;
   font-family: var(--font_ritual), "Solarisael Runic", "Solarisael Symbols";
   font-size: clamp(1.75rem, 3vw, 2.25rem);
   font-weight: 400;
@@ -495,9 +497,6 @@ sol-obsidian-tablet[data-obsidian-renderer="webgpu"] .sol__side_menu_icon {
   }
   .sol__side_menu_route {
     min-height: 4rem;
-  }
-  .sol__side_menu_route > sol-inscription {
-    font-size: clamp(1.75rem, 7vw, 2.25rem);
   }
 }
 @media (prefers-reduced-motion: reduce) {

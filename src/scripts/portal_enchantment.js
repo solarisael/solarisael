@@ -1,13 +1,8 @@
 import { create_ambient_glyphs } from "./enchantment_ambient.js";
-import { create_word_enchantment } from "./enchantment_word.js";
+import { create_portal_lettering } from "./lettering/runtime.js";
 import { create_enchanted_rim } from "./enchantment_rim.js";
 import { acquire_element_depth } from "./element_depth.js";
-import {
-  load_enchantment_fonts,
-  RUNIC_GLYPHS,
-  SYMBOL_GLYPHS,
-} from "./enchantment_glyphs.js";
-import { create_portal_inscriptions } from "./portal_inscriptions.js";
+import { load_enchantment_fonts } from "./enchantment_glyphs.js";
 
 const route_from = (target) =>
   target instanceof Element ? target.closest("[data-side-menu-route]") : null;
@@ -18,12 +13,9 @@ export const create_portal_enchantment = (
 ) => {
   const layer = menu.querySelector("[data-portal-glyphs]");
   const motion = matchMedia("(prefers-reduced-motion: reduce)");
-  const words = new Map();
-  for (const link of menu.querySelectorAll("[data-side-menu-route]")) {
-    if (link.querySelector("[data-inscription-text]")) {
-      words.set(link, create_word_enchantment(link));
-    }
-  }
+  const lettering = menu.querySelector("[data-portal-lettering]")
+    ? create_portal_lettering(menu)
+    : null;
   const ambient = create_ambient_glyphs(layer);
   const close = menu.querySelector("[data-side-menu-close]");
   const rim = close ? create_enchanted_rim(close) : null;
@@ -43,23 +35,16 @@ export const create_portal_enchantment = (
     !motion.matches &&
     menu.isConnected &&
     visible();
-  const inscriptions = create_portal_inscriptions(menu, {
-    glyphs: [...RUNIC_GLYPHS, ...SYMBOL_GLYPHS],
-    is_enabled: () => fonts_ready && enabled(),
-  });
   const restore = () => {
     revealed = false;
     menu.dataset.portalEnchantment = "quiet";
-    inscriptions.restore();
-    for (const word of words.values()) word.restore();
+    lettering?.restore();
   };
   const reveal = () => {
     if (!enabled() || !fonts_ready || revealed) return;
     revealed = true;
     menu.dataset.portalEnchantment = "active";
-    inscriptions.reveal();
-    let index = 0;
-    for (const word of words.values()) word.reveal(index++ * 35);
+    lettering?.show();
   };
   const start_fonts = () => {
     if (fonts_pending || fonts_ready || fonts_failed) return;
@@ -97,7 +82,7 @@ export const create_portal_enchantment = (
   }
   const enchant = (route) => {
     if (!enabled() || !fonts_ready) return;
-    words.get(route)?.reveal();
+    lettering?.reveal(route);
   };
   const on_selection = (event) => {
     const route = route_from(event.target);
@@ -107,10 +92,6 @@ export const create_portal_enchantment = (
     enchant(route);
   };
   const on_touch = (event) => enchant(event.detail.route);
-  const measure = () => {
-    if (!enabled() || !fonts_ready) return;
-    for (const word of words.values()) word.measure();
-  };
   const attributes = new MutationObserver(sync);
   attributes.observe(menu, {
     attributes: true,
@@ -121,8 +102,6 @@ export const create_portal_enchantment = (
       "data-side-menu-view",
     ],
   });
-  const resize = new ResizeObserver(measure);
-  resize.observe(layer.parentElement);
   menu.addEventListener("sol:portal-revealed", sync);
   menu.addEventListener("sol:portal-enchant", on_touch);
   menu.addEventListener("pointerover", on_selection);
@@ -138,15 +117,13 @@ export const create_portal_enchantment = (
       if (disposed) return;
       disposed = true;
       attributes.disconnect();
-      resize.disconnect();
       menu.removeEventListener("sol:portal-revealed", sync);
       menu.removeEventListener("sol:portal-enchant", on_touch);
       menu.removeEventListener("pointerover", on_selection);
       menu.removeEventListener("focusin", on_selection);
       document.removeEventListener("visibilitychange", sync);
       motion.removeEventListener("change", sync);
-      inscriptions.dispose();
-      for (const word of words.values()) word.dispose();
+      lettering?.dispose();
       ambient.dispose();
       rim?.dispose();
       depth.release();
